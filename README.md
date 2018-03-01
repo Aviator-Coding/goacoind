@@ -7,19 +7,19 @@ The container can either be used as a classic headless wallet or a **masternode*
 ### Headless wallet
 1. Run a **wallet** container and specify at least the `rpcuser` and `rpcpassword` to interact with the **Goacoin** daemon:
 ```
-docker run lepetitbloc/goacoind --name goacoin -rpcuser=goacoinrpc -rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
+docker run --name goacoin lepetitbloc/goacoind -rpcuser=goacoinrpc -rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
 ```
 > We recommend to mount a volume for easier access to the *data* and the *configuration* files.
 > You should also create a configuration for your RPC credentials (see `wallet/conf/wallet.conf`) to avoid retyping them when using the internal `goacoin-cli`.
 > ```
-> docker run lepetitbloc/goacoind --name goacoin -v ./goacoin:/home/goacoin/`
+> docker run --name goacoin -v ./goacoin:/home/goacoin/ lepetitbloc/goacoind
 > ```
 
 > :snake: Ensure that a `data` directory **exists** and is **writable** in the mounted host directory.
 
 2. Once your wallet is running, you can print your main address:
 ```
-docker exec -d goacoin goacoin-cli getaccountaddress ""
+docker exec goacoin goacoin-cli getaccountaddress ""
 ```
 > GK92mbjS9bCAUuU7DEyyuK9US1qLqkoyce
 
@@ -30,7 +30,7 @@ docker exec -d goacoin goacoin-cli getaccountaddress ""
 > ```
 > quohd4kaw9guvi8ie7phaighawaiLoo6
 ```
-docker exec -d goacoin goacoin-cli encryptwallet quohd4kaw9guvi8ie7phaighawaiLoo6
+docker exec goacoin goacoin-cli encryptwallet quohd4kaw9guvi8ie7phaighawaiLoo6
 ```
 > Wallet encrypted; GoaCoin Core server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.
 
@@ -46,7 +46,7 @@ docker exec -d goacoin goacoin-cli encryptwallet quohd4kaw9guvi8ie7phaighawaiLoo
 
 2. Only then you may find the corresponding transaction `hash` and `index` :
 ```
-docker exec -d goacoin goacoin-cli masternode outputs
+docker exec goacoin goacoin-cli masternode outputs
 ```
 >```
 >{
@@ -77,12 +77,12 @@ rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
 
 2. Run a container as a **masternode**:
 ```
-docker run lepetitbloc/goacoind --name masternode -v ./masternode:/home/goacoin/ -masternode=1 -masternodeprivkey=YourMasternodePrivKey -addnode=54.37.74.53
+docker run --name masternode -v ./masternode:/home/goacoin/ lepetitbloc/goacoind -masternode=1 -masternodeprivkey=YourMasternodePrivKey -addnode=54.37.74.53
 ```
 
 2. Check the status until the masternode is started:
 ```
-docker exec -d masternode goacoin-cli getinfo
+docker exec masternode goacoin-cli getinfo
 ```
 
 ## docker-compose
