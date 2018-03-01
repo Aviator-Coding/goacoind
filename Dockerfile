@@ -48,7 +48,7 @@ WORKDIR /home/goacoin
 
 RUN mkdir -p .goacoincore data conf \
 &&  touch conf/wallet.conf \
-&&  ln -s conf/wallet.conf /home/goacoin/.goacoincore/goacoin.conf
+&&  ln -s conf/wallet.conf .goacoincore/goacoin.conf
 
 ENTRYPOINT ["/usr/local/bin/goacoind", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../conf/wallet.conf", "-mnconf=../conf/masternode.conf", "-port=9999", "-rpcport=1948"]
 CMD ["-rpcuser=goacoinrpc", "-rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j", "-rpcallowip=127.0.0.1", "-server=1", "-listen=0", "-masternode=0"]
