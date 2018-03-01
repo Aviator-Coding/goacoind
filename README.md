@@ -10,7 +10,7 @@ The container can either be used as a classic headless wallet or a **masternode*
 docker run lepetitbloc/goacoind --name goacoin -rpcuser=goacoinrpc -rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
 ```
 > We recommend to mount a volume for easier access to the *data* and the *configuration* files.
-> You should also create a configuration for your RPC credentials (see `wallet/conf/wallet.conf`) to avoid retyping them when using the `goacoin-cli`.
+> You should also create a configuration for your RPC credentials (see `wallet/conf/wallet.conf`) to avoid retyping them when using the internal `goacoin-cli`.
 > ```
 > docker run lepetitbloc/goacoind --name goacoin -v ./goacoin:/home/goacoin/`
 > ```
