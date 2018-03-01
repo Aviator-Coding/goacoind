@@ -28,9 +28,6 @@ Then just run:
 docker-compose up --build
 ```
 
-> **Pro Tip:** Check the next section for available implementations, that will save you the build step, compose will
-just have to pull the images.
-
 ## Parent project
 This project is part of the `walletd` initiative:
 https://github.com/LePetitBloc/walletd
