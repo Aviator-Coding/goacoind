@@ -2,14 +2,10 @@ ARG BDB_VERSION="4.8.30.NC"
 
 FROM lepetitbloc/bdb:$BDB_VERSION
 
-ARG WALLET="goacoin"
 ARG USE_UPNP=1
-ARG REPOSITORY="https://github.com/goacoincore/goacoin.git"
+ENV USE_UPNP=$USE_UPNP
 
-ENV WALLET=$WALLET \
-    HOME=/home/wallet
-
-EXPOSE 9999 9998
+EXPOSE 9999 1948
 
 RUN apt-get update -y && apt-get install -y \
     libssl-dev \
@@ -22,32 +18,37 @@ RUN apt-get update -y && apt-get install -y \
     libminiupnpc-dev \
     libqrencode-dev \
     libgmp-dev \
+    libevent-dev \
+    libzmq3-dev \
     automake \
     pkg-config \
     git \
+    bsdmainutils \
 && rm -rf /var/lib/apt/lists/* \
-&& useradd -lrUm wallet \
-&& git clone --depth 1 $REPOSITORY /wallet
+&& useradd -lrUm goacoin \
+&& git clone --depth 1 https://github.com/goacoincore/goacoin.git /tmp/goacoin
 
-WORKDIR /wallet/src
+WORKDIR /tmp/goacoin
 
-RUN make -f makefile.unix \
-# strip binaries if exists
-&& strip ${WALLET}d \
-&& if [ -f ${WALLET}-cli ]; then strip ${WALLET}-cli; fi \
-&& if [ -f ${WALLET}-tx ]; then strip ${WALLET}-tx; fi \
-# move binaries
-&& mv ${WALLET}d /usr/local/bin/walletd \
-&& if [ -f ${WALLET}-cli ]; then mv ${WALLET}-cli /usr/local/bin/wallet-cli; fi \
-&& if [ -f ${WALLET}-tx ]; then mv ${WALLET}-tx /usr/local/bin/wallet-tx; fi \
+# build
+RUN chmod +x autogen.sh share/genbuild.sh src/leveldb/build_detect_platform \
+&& ./autogen.sh \
+&& ./configure CPPFLAGS="-I/usr/local/db4/include -O2" LDFLAGS="-L/usr/local/db4/lib" \
+&& make \
+&& strip src/goacoind src/goacoin-cli src/goacoin-tx \
+&& mv src/goacoind /usr/local/bin/goacoind \
+&& mv src/goacoin-cli /usr/local/bin/goacoin-cli \
+&& mv src/goacoin-tx /usr/local/bin/goacoin-tx \
 # clean
-&& rm -rf /wallet
+&& rm -rf /tmp/goacoin
 
-USER wallet
+USER goacoin
 
-WORKDIR $HOME
+WORKDIR /home/goacoin
 
-RUN mkdir -p data conf
+RUN mkdir -p .goacoincore data conf \
+&&  touch conf/wallet.conf \
+&&  ln -s conf/wallet.conf /home/goacoin/.goacoincore/goacoin.conf
 
-ENTRYPOINT ["/usr/local/bin/walletd", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../conf/wallet.conf", "-mnconf=../conf/masternode.conf", "-port=9999", "-rpcport=9998"]
-CMD ["-rpcuser=walletrpc", "-rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j", "-rpcallowip=127.0.0.1", "-server=1", "-listen=0", "-masternode=0"]
+ENTRYPOINT ["/usr/local/bin/goacoind", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../conf/wallet.conf", "-mnconf=../conf/masternode.conf", "-port=9999", "-rpcport=1948"]
+CMD ["-rpcuser=goacoinrpc", "-rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j", "-rpcallowip=127.0.0.1", "-server=1", "-listen=0", "-masternode=0"]
