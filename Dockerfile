@@ -1,10 +1,10 @@
-ARG BDB_VERSION="5.3.28.NC"
+ARG BDB_VERSION="4.8.30.NC"
 
 FROM lepetitbloc/bdb:$BDB_VERSION
 
-ARG WALLET="artax"
+ARG WALLET="goacoin"
 ARG USE_UPNP=1
-ARG REPOSITORY="https://github.com/Artax-Project/Artax.git"
+ARG REPOSITORY="https://github.com/goacoincore/goacoin.git"
 
 ENV WALLET=$WALLET \
     HOME=/home/wallet
@@ -49,5 +49,5 @@ WORKDIR $HOME
 
 RUN mkdir -p data conf
 
-ENTRYPOINT ["/usr/local/bin/walletd", "-rescan", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../conf/wallet.conf", "-mnconf=../conf/masternode.conf", "-port=9999", "-rpcport=9998"]
+ENTRYPOINT ["/usr/local/bin/walletd", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../conf/wallet.conf", "-mnconf=../conf/masternode.conf", "-port=9999", "-rpcport=9998"]
 CMD ["-rpcuser=walletrpc", "-rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j", "-rpcallowip=127.0.0.1", "-server=1", "-listen=0", "-masternode=0"]
