@@ -36,9 +36,9 @@ RUN chmod +x autogen.sh share/genbuild.sh src/leveldb/build_detect_platform \
 && ./configure CPPFLAGS="-I/usr/local/db4/include -O2" LDFLAGS="-L/usr/local/db4/lib" \
 && make \
 && strip src/goacoind src/goacoin-cli src/goacoin-tx \
-&& mv src/goacoind /usr/local/bin/goacoind \
-&& mv src/goacoin-cli /usr/local/bin/goacoin-cli \
-&& mv src/goacoin-tx /usr/local/bin/goacoin-tx \
+&& mv src/goacoind /usr/local/bin/ \
+&& mv src/goacoin-cli /usr/local/bin/ \
+&& mv src/goacoin-tx /usr/local/bin/ \
 # clean
 && rm -rf /tmp/goacoin
 
