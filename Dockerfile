@@ -46,7 +46,7 @@ USER goacoin
 
 WORKDIR /home/goacoin
 
-RUN mkdir -p .goacoincore data \
+RUN mkdir -p .goacoincore data
 
 COPY wallet/.goacoincore/ .goacoincore/
 
