@@ -5,7 +5,7 @@ FROM lepetitbloc/bdb:$BDB_VERSION
 ARG USE_UPNP=1
 ENV USE_UPNP=$USE_UPNP
 
-EXPOSE 9999 1948
+EXPOSE 1947 1948
 
 RUN apt-get update -y && apt-get install -y \
     libssl-dev \
@@ -50,5 +50,5 @@ RUN mkdir -p .goacoincore data
 
 COPY wallet/.goacoincore/ .goacoincore/
 
-ENTRYPOINT ["/usr/local/bin/goacoind", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../.goacoincore/goacoin.conf", "-mnconf=../.goacoincore/masternode.conf", "-port=9999", "-rpcport=1948"]
+ENTRYPOINT ["/usr/local/bin/goacoind", "-reindex", "-printtoconsole", "-logtimestamps=1", "-datadir=data", "-conf=../.goacoincore/goacoin.conf", "-mnconf=../.goacoincore/masternode.conf", "-port=1947", "-rpcport=1948"]
 CMD ["-rpcallowip=127.0.0.1", "-server=1", "-masternode=0"]
