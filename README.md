@@ -7,12 +7,12 @@ The container can either be used as a classic headless wallet or a **masternode*
 ### Headless wallet
 1. Run a **wallet** container and specify at least the `rpcuser` and `rpcpassword` to interact with the **Goacoin** daemon:
 ```
-docker run --name goacoin lepetitbloc/goacoind -rpcuser=goacoinrpc -rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
+docker run --name goacoin --restart always -d lepetitbloc/goacoind -rpcuser=goacoinrpc -rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
 ```
 > We recommend to mount a volume for easier access to the *data* and the *configuration* files.
-> You should also create a configuration for your RPC credentials (see `wallet/conf/wallet.conf`) to avoid retyping them when using the internal `goacoin-cli`.
+> You should also create a configuration for your RPC credentials (see `wallet/.goacoincore/goacoin.conf`) to avoid retyping them when using the internal `goacoin-cli`.
 > ```
-> docker run --name goacoin -v ./goacoin:/home/goacoin/ lepetitbloc/goacoind
+> docker run --name goacoin --restart always -d -v ./goacoin:/home/goacoin/ lepetitbloc/goacoind
 > ```
 
 > :snake: Ensure that a `data` directory **exists** and is **writable** in the mounted host directory.
@@ -62,28 +62,54 @@ masternode genkey
 >7ev3RXQXYfztreEz8wmPKgJUpNiqkAkkdxt24C3ZKtg5qEVfou9
 >```
 
-4. And finally creates the `./goacoin/conf/masternode.conf` file, and fill in following this template:
+4. And finally creates the `~/.goacoincore/masternode.conf` file, and fill in following this template:
 > `mn01 masternode:21529 YouMasterNodePrivateKey TransactionHash 0 YourWalletAddress:100`
 ```
 touch ./goacoin/conf/masternode.conf
 ```
 
 #### Setup
-1. As a classic wallet, you should create a `masternode/conf/wallet.conf` configuration file
+1. As a classic wallet, create a `masternode/.goacoincore/goacoin.conf` configuration file
 ```
 rpcuser=goacoinrpc
 rpcpassword=4VvDhcoqFUcZbmkWUMJz8P443WLfoaMmiREKSByJaT4j
+masternode=1
+masternodeprivkey=7ev3RXQXYfztreEz8wmPKgJUpNiqkAkkdxt24C3ZKtg5qEVfou9
+externalip=YOUR.EXTERNAL.IP:1947
+addnode=31.132.0.124:1947
+addnode=107.174.68.186:1947
+addnode=107.175.59.28:1947
+addnode=173.212.224.53:1947
+addnode=45.43.7.242:1947
+addnode=54.37.74.186:1947
+addnode=194.67.213.243:1947
 ```
 
 2. Run a container as a **masternode**:
 ```
-docker run --name masternode -v ./masternode:/home/goacoin/ lepetitbloc/goacoind -masternode=1 -masternodeprivkey=YourMasternodePrivKey -addnode=54.37.74.53
+docker run --name masternode --restart always -d -p 1947:1947 -p 1948:1948 -v /home/goacoin/masternode:/home/goacoin/ lepetitbloc/goacoind -masternode=1
 ```
 
-2. Check the status until the masternode is started:
+3. Check the the number of `blocks` until the chain is sync:
 ```
 docker exec masternode goacoin-cli getinfo
 ```
+
+4. Once the chain synced you can start the **masternode** from your **wallet**:
+```
+docker exec wallet goacoin-cli masternode start-all
+```
+> You might need to unlock your **wallet** first:
+> ```
+>  docker exec wallet goacoin-cli quohd4kaw9guvi8ie7phaighawaiLoo6 60
+> ```
+> :snake: Mind the **space** before the command below, that's not a typo, it’s meant to avoid storing your passphrase in *history*.
+
+5. Then check the **masternode** status with your initial **transaction hash**:
+```
+docker exec wallet crowdcoin-cli masternodelist | grep 6d94f70499c3f7ba2c59acaa5c04e54ef123d0e460bb07c55ace6464deaf3c85
+```
+> `"6d94f70499c3f7ba2c59acaa5c04e54ef123d0e460bb07c55ace6464deaf3c85-1": "ENABLED",`
 
 ## docker-compose
 You could setup **both** at the same time using `docker-compose`.

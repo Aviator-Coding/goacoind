@@ -4,7 +4,7 @@ services:
     image: lepetitbloc\goacoind
     restart: always
     ports:
-      - 1949:9999
+      - 1947:1947
       - 1948:1948 # allow to control your wallet from a remote `goacoin-cli` providing the appropriate `rpcallowip`
     command: [
       "-rpcuser=goacoinrpc",
@@ -20,7 +20,8 @@ services:
     image: lepetitbloc\goacoind
     restart: always
     ports:
-      - 1950:9999
+      - 1947:1947
+      - 1948:1948
     command: [
       "-server=0",
       "-listen=1",
